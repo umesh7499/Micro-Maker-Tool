@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Page Reorganizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>PDF Page Reorganizer</h2>
+
+<div class="container">
+    <label>Upload Original PDF:</label>
+    <input type="file" id="pdfFile" accept="application/pdf">
+
+    <label>Upload Blank PDF Page:</label>
+    <input type="file" id="blankPdf" accept="application/pdf">
+
+    <!-- NEW STATIC DOWNLOAD BUTTON -->
+    <button onclick="downloadBlankPDF()">Download Blank PDF</button>
+
+    <button onclick="reorganizePDF()">Reorganize PDF</button>
+
+
+
+<button class="next-tool-btn" onclick="location.href='9page.html'">
+    Convert PDF to 9 Pages on 1 Sheet
+</button>
+
+
+
+
+</div>
+
+<script>
+// ----------------------------------------
+// CREATE & DOWNLOAD A BLANK PDF (A4 PAGE)
+// ----------------------------------------
+async function downloadBlankPDF() {
+    const blankDoc = await PDFLib.PDFDocument.create();
+    blankDoc.addPage([595.28, 841.89]);  // A4 size in points
+
+    const pdfBytes = await blankDoc.save();
+
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "blank_page.pdf";
+    link.click();
+}
+
+// ----------------------------------------
+// YOUR EXISTING REORGANIZER CODE (UNCHANGED)
+// ----------------------------------------
+async function reorganizePDF() {
+    const pdfFile = document.getElementById('pdfFile').files[0];
+    const blankFile = document.getElementById('blankPdf').files[0];
+
+    if(!pdfFile || !blankFile){
+        alert("Please upload both PDF and blank PDF page.");
+        return;
+    }
+
+    const pdfBytes = await pdfFile.arrayBuffer();
+    const blankBytes = await blankFile.arrayBuffer();
+
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+    const blankDoc = await PDFLib.PDFDocument.load(blankBytes);
+    const newPdf = await PDFLib.PDFDocument.create();
+
+    const patterns = [
+        [1,3,5,7,9,11,13,15,17],
+        [6,4,2,12,10,8,18,16,14],
+
+        [19,21,23,25,27,29,31,33,35],
+        [24,22,20,30,28,26,36,34,32],
+
+        [37,39,41,43,45,47,49,51,53],
+        [42,40,38,48,46,44,54,52,50],
+
+        [55,57,59,61,63,65,67,69,71],
+        [60,58,56,66,64,62,72,70,68],
+
+        [73,75,77,79,81,83,85,87,89],
+        [78,76,74,84,82,80,90,88,86],
+
+        [91,93,95,97,99,101,103,105,107],
+        [96,94,92,102,100,98,108,106,104],
+
+        [109,111,113,115,117,119,121,123,125],
+        [114,112,110,120,118,116,126,124,122],
+
+        [127,129,131,133,135,137,139,141,143],
+        [132,130,128,138,136,134,144,142,140],
+
+        [145,147,149,151,153,155,157,159,161],
+        [150,148,146,156,154,152,162,160,158]
+    ];
+
+    const totalPages = pdfDoc.getPageCount();
+
+    const neededSets = Math.ceil(totalPages / 18);
+    const rowsToUse = neededSets * 2;
+    const patternsToUse = patterns.slice(0, rowsToUse);
+
+    for (let row of patternsToUse) {
+        for (let p of row) {
+            let idx = p - 1;
+            if (idx < totalPages) {
+                const [copied] = await newPdf.copyPages(pdfDoc, [idx]);
+                newPdf.addPage(copied);
+            } else {
+                const [blankPage] = await newPdf.copyPages(blankDoc, [0]);
+                newPdf.addPage(blankPage);
+            }
+        }
+    }
+
+    const pdfDataUri = await newPdf.saveAsBase64({dataUri: true});
+    const link = document.createElement('a');
+    link.href = pdfDataUri;
+    link.download = 'reorganized.pdf';
+    link.click();
+}
+</script>
+
+</body>
+</html>

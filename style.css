@@ -1,0 +1,123 @@
+/* Import Beautiful Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* BODY BACKGROUND */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* BACKGROUND IMAGE LAYER */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("1.jpg") center/cover no-repeat;
+    filter: blur(14px) brightness(0.45);
+    z-index: -1;
+}
+
+
+
+
+
+.next-tool-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.next-tool-btn:hover {
+    background: #0056b3;
+}
+
+
+
+
+
+
+
+/* CENTER GLASS CONTAINER */
+.container {
+    width: 90%;
+    max-width: 600px;
+    background: rgba(0,0,0,0.55);
+    padding: 35px;
+    border-radius: 25px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+
+/* ICON */
+.icon-box img {
+    width: 90px;
+    margin-bottom: 15px;
+}
+
+
+/* TITLE */
+h1 {
+    color: #ffde59;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px black;
+}
+
+/* LABELS */
+label {
+    color: white;
+    font-weight: 500;
+    display: block;
+    margin: 15px 0 8px;
+    font-size: 15px;
+}
+
+/* FILE INPUT */
+input[type="file"] {
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 14px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 12px;
+    background: #ffde59;
+    color: black;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255,222,89,0.5);
+}
+
+button:hover {
+    background: #ffe990;
+    box-shadow: 0 0 18px rgba(255,222,89,0.8);
+}

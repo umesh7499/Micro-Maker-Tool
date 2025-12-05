@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>9 Pages on 1 Sheet</title>
+
+  <!-- pdf.js (renderer) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+  <!-- pdf-lib -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+
+  <!-- your CSS (the glass style you provided earlier) -->
+  <link rel="stylesheet" href="style1.css">
+
+  <!-- our separate JS file -->
+  <script src="ninepage.js" defer></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="icon-box"><!-- optional icon -->
+      <img src="icon.png" alt="icon" onerror="this.style.display='none'">
+    </div>
+
+    <h1>9 Pages on 1 Sheet</h1>
+
+    <label>Select PDF File</label>
+    <input type="file" id="pdfInput" accept="application/pdf">
+
+    <button id="convertBtn">Convert to 9-in-1</button>
+
+    <p id="status" style="color:#fff; margin-top:12px; font-size:14px;"></p>
+  </div>
+</body>
+</html>
