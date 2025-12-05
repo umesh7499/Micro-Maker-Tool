@@ -132,6 +132,34 @@ button:hover {
         margin-bottom: 30px;
     }
 
+
+
+
+/* FIXED H2 AT TOP */
+h2 {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 22px;
+    z-index: 10;
+    margin: 0;
+    text-shadow: 0 0 10px black;
+}
+
+/* MOVE MAIN CONTENT DOWN */
+.container {
+    margin-top: 80px; /* Prevent overlap with h2 */
+}
+
+
+
+
+
+    
+    
+
     h1 {
         font-size: 24px;
     }
@@ -146,3 +174,4 @@ button:hover {
         padding: 14px;
     }
 }
+
