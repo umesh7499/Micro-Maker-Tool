@@ -150,7 +150,7 @@ h2 {
 
 /* MOVE MAIN CONTENT DOWN */
 .container {
-    margin-top: 200px; /* Prevent overlap with h2 */
+    margin-top: 120px; /* Prevent overlap with h2 */
 }
 
 
@@ -175,6 +175,7 @@ h2 {
         padding: 14px;
     }
 }
+
 
 
 
