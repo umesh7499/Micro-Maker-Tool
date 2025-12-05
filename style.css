@@ -139,7 +139,7 @@ button:hover {
 h2 {
     position: fixed;
     top: 15px;
-    left: 10%;
+    left: 80%;
     transform: translateX(-50%);
     color: white;
     font-size: 22px;
@@ -175,6 +175,7 @@ h2 {
         padding: 14px;
     }
 }
+
 
 
 
