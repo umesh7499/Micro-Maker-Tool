@@ -1,61 +1,148 @@
-/* Make whole layout readable on mobile */
+/* Import Beautiful Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* BODY BACKGROUND */
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    overflow-y: auto; /* FIX: allow scrolling on mobile */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
 }
 
-/* Ensure main container has full width */
-.container {
+/* BACKGROUND IMAGE LAYER */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 15px;
-    box-sizing: border-box;
+    height: 100%;
+    background: url("1.jpg") center/cover no-repeat;
+    filter: blur(14px) brightness(0.45);
+    z-index: -1;
 }
 
-/* Make heading always visible on top */
-.container h2 {
-    font-size: 24px;
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-/* Improve input visibility */
-input, button, label {
+/* NEXT TOOL BUTTON */
+.next-tool-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
     font-size: 16px;
+    cursor: pointer;
 }
 
-/* Prevent zoom-in issues on mobile */
-input[type="file"],
-input[type="text"],
+.next-tool-btn:hover {
+    background: #0056b3;
+}
+
+/* CENTER GLASS CONTAINER */
+.container {
+    width: 90%;
+    max-width: 600px;
+    background: rgba(0,0,0,0.55);
+    padding: 35px;
+    border-radius: 25px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    text-align: center;
+    margin-top: 40px;   /* FIX: keeps visible on mobile */
+    margin-bottom: 40px; /* fixed bottom cutoff */
+}
+
+/* ICON */
+.icon-box img {
+    width: 90px;
+    margin-bottom: 15px;
+}
+
+/* TITLE */
+h1 {
+    color: #ffde59;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px black;
+}
+
+/* LABELS */
+label {
+    color: white;
+    font-weight: 500;
+    display: block;
+    margin: 15px 0 8px;
+    font-size: 15px;
+}
+
+/* FILE INPUT */
+input[type="file"] {
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 14px;
+}
+
+/* BUTTON */
 button {
     width: 100%;
-    max-width: 100%;
-    padding: 12px;
-    box-sizing: border-box;
+    padding: 14px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 12px;
+    background: #ffde59;
+    color: black;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255,222,89,0.5);
 }
 
-/* Mobile responsive layout */
+button:hover {
+    background: #ffe990;
+    box-shadow: 0 0 18px rgba(255,222,89,0.8);
+}
+
+/* -------------------------------------- */
+/* 🌟 MOBILE FIXES ONLY */
+/* -------------------------------------- */
+
 @media (max-width: 600px) {
-    .container {
+
+    body {
+        align-items: flex-start; /* Fix content cut on top */
         padding: 10px;
     }
 
-    .container h2 {
-        font-size: 22px;
-        margin-bottom: 15px;
+    .container {
+        padding: 25px !important;
+        width: 100% !important;
+        border-radius: 18px;
+        margin-top: 30px;
+        margin-bottom: 30px;
     }
 
-    input, button {
-        font-size: 16px;
+    h1 {
+        font-size: 24px;
+    }
+
+    input[type="file"] {
+        font-size: 15px;
+        padding: 12px;
+    }
+
+    button {
+        font-size: 15px;
         padding: 14px;
-    }
-
-    /* Make result/download box visible */
-    #outputContainer {
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 10px;
-        display: block !important;
     }
 }
