@@ -135,6 +135,7 @@ button:hover {
 
 
 
+/* FIXED H2 AT TOP */
 h2 {
     position: fixed;
     top: 15px;
@@ -146,6 +147,12 @@ h2 {
     margin: 0;
     text-shadow: 0 0 10px black;
 }
+
+/* MOVE MAIN CONTENT DOWN */
+.container {
+    margin-top: 10px; /* Prevent overlap with h2 */
+}
+
 
 
 
