@@ -4,6 +4,7 @@
 /* BODY BACKGROUND */
 body {
     margin: 0;
+    colour: white;
     padding: 0;
     height: 100vh;
     font-family: 'Poppins', sans-serif;
@@ -175,6 +176,7 @@ h2 {
         padding: 14px;
     }
 }
+
 
 
 
