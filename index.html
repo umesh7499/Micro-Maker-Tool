@@ -3,7 +3,11 @@
 <head>
     <title>PDF Page Reorganizer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PDF-LIB -->
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+
+    <!-- Your CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,65 +15,71 @@
 <h2>PDF Page Reorganizer BY Umesh J</h2>
 
 <div class="container">
+
     <label>Upload Original PDF:</label>
     <input type="file" id="pdfFile" accept="application/pdf">
 
-    <label>Upload Blank PDF Page:</label>
-    <input type="file" id="blankPdf" accept="application/pdf">
+    <!-- BLANK PDF UPLOAD REMOVED -->
+    <!-- Using your cloud-hosted blank PDF instead -->
 
-    <!-- NEW STATIC DOWNLOAD BUTTON -->
     <button onclick="downloadBlankPDF()">Download Blank PDF</button>
 
     <button onclick="reorganizePDF()">Reorganize PDF</button>
 
-
-
-<button class="next-tool-btn" onclick="location.href='9page.html'">
-    Convert PDF to 9 Pages on 1 Sheet
-</button>
-
-
-
+    <button class="next-tool-btn" onclick="location.href='9page.html'">
+        Convert PDF to 9 Pages on 1 Sheet
+    </button>
 
 </div>
 
+
+
 <script>
-// ----------------------------------------
-// CREATE & DOWNLOAD A BLANK PDF (A4 PAGE)
-// ----------------------------------------
+// -------------------------------------
+// CLOUD BLANK PAGE URL
+// -------------------------------------
+const BLANK_URL = "https://limewire.com/d/78jY5#D6t6dqmQIt";
+
+
+// -------------------------------------
+// DOWNLOAD cloud blank page
+// -------------------------------------
 async function downloadBlankPDF() {
-    const blankDoc = await PDFLib.PDFDocument.create();
-    blankDoc.addPage([595.28, 841.89]);  // A4 size in points
+    const blankBytes = await fetch(BLANK_URL).then(res => res.arrayBuffer());
+    const blob = new Blob([blankBytes], { type: "application/pdf" });
 
-    const pdfBytes = await blankDoc.save();
-
-    const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const link = document.createElement("a");
-
     link.href = URL.createObjectURL(blob);
     link.download = "blank_page.pdf";
     link.click();
 }
 
-// ----------------------------------------
-// YOUR EXISTING REORGANIZER CODE (UNCHANGED)
-// ----------------------------------------
+
+
+// -------------------------------------
+// REORGANIZE PDF using cloud blank page
+// -------------------------------------
 async function reorganizePDF() {
     const pdfFile = document.getElementById('pdfFile').files[0];
-    const blankFile = document.getElementById('blankPdf').files[0];
 
-    if(!pdfFile || !blankFile){
-        alert("Please upload both PDF and blank PDF page.");
+    if (!pdfFile) {
+        alert("Please upload the Original PDF.");
         return;
     }
 
     const pdfBytes = await pdfFile.arrayBuffer();
-    const blankBytes = await blankFile.arrayBuffer();
+
+    // Fetch cloud blank page
+    const blankBytes = await fetch(BLANK_URL).then(res => res.arrayBuffer());
 
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
     const blankDoc = await PDFLib.PDFDocument.load(blankBytes);
     const newPdf = await PDFLib.PDFDocument.create();
 
+
+    // ---------------------------------------------------
+    // PAGE PATTERNS (unchanged)
+    // ---------------------------------------------------
     const patterns = [
         [1,3,5,7,9,11,13,15,17],
         [6,4,2,12,10,8,18,16,14],
@@ -100,36 +110,42 @@ async function reorganizePDF() {
     ];
 
     const totalPages = pdfDoc.getPageCount();
-
     const neededSets = Math.ceil(totalPages / 18);
     const rowsToUse = neededSets * 2;
     const patternsToUse = patterns.slice(0, rowsToUse);
 
+
+    // ---------------------------------------------------
+    // BUILD FINAL REARRANGED PDF
+    // ---------------------------------------------------
     for (let row of patternsToUse) {
         for (let p of row) {
             let idx = p - 1;
+
             if (idx < totalPages) {
+                // Copy page from original
                 const [copied] = await newPdf.copyPages(pdfDoc, [idx]);
                 newPdf.addPage(copied);
             } else {
+                // Add blank page from cloud blank PDF
                 const [blankPage] = await newPdf.copyPages(blankDoc, [0]);
                 newPdf.addPage(blankPage);
             }
         }
     }
 
-    const pdfDataUri = await newPdf.saveAsBase64({dataUri: true});
-    const link = document.createElement('a');
+    // ---------------------------------------------------
+    // DOWNLOAD FILE
+    // ---------------------------------------------------
+    const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
+
+    const link = document.createElement("a");
     link.href = pdfDataUri;
-    link.download = 'reorganized.pdf';
+    link.download = "reorganized.pdf";
     link.click();
 }
+
 </script>
 
 </body>
 </html>
-
-
-
-
-
