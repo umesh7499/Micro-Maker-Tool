@@ -171,17 +171,43 @@ async function reorganizePDF() {
     }
 
     // DOWNLOAD OUTPUT PDF
-    const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
-    const link = document.createElement("a");
-    link.href = pdfDataUri;
-    link.download = "reorganized.pdf";
-    link.click();
+   // const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
+   // const link = document.createElement("a");
+   // link.href = pdfDataUri;
+   // link.download = "reorganized.pdf";
+   // link.click();
 
     // SHOW CELEBRATION POPUP
-    showSuccessPopup();
+   // showSuccessPopup();
+
+
+
+
+
+
+    // DOWNLOAD OUTPUT PDF
+const originalName = pdfFile.name.replace(".pdf", "");
+const outputName = originalName + "_ORGANIZED.pdf";
+
+const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
+const link = document.createElement("a");
+link.href = pdfDataUri;
+link.download = outputName;
+link.click();
+
+// SHOW CELEBRATION POPUP
+showSuccessPopup();
+
+
+
+
+
+
+    
 }
 
 </script>
 
 </body>
 </html>
+
