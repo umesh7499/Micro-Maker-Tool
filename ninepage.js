@@ -37,7 +37,7 @@
 
       // Render pages to images (thumbnails). Scale down to avoid huge textures.
       const images = [];
-      const renderScale = 1.0; // set lower if very large pages; 0.5 for heavy docs
+      const renderScale = 4.0; // set lower if very large pages; 0.5 for heavy docs
       for (let i = 1; i <= pdf.numPages; ++i) {
         setStatus(`Rendering page ${i} / ${pdf.numPages}...`);
         const page = await pdf.getPage(i);
@@ -183,3 +183,4 @@
     });
   }
 })();
+
