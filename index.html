@@ -45,6 +45,32 @@
             margin: 0;
             font-size: 16px;
         }
+
+        /* PROGRESS BAR CONTAINER */
+        #progressContainer {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 400px;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        /* PROGRESS BAR */
+        #progressBar {
+            height: 100%;
+            width: 0%;
+            background: #5865f2;
+            border-radius: 10px;
+            transition: width 0.2s ease;
+        }
     </style>
 
 </head>
@@ -64,6 +90,11 @@
         Convert PDF to 9 Pages on 1 Sheet
     </button>
 
+</div>
+
+<!-- PROGRESS BAR -->
+<div id="progressContainer">
+    <div id="progressBar"></div>
 </div>
 
 <!-- SUCCESS POPUP -->
@@ -99,7 +130,34 @@ function showSuccessPopup() {
     }, 3000);
 }
 
+// -------------------------------------
+// SHOW PROGRESS BAR
+// -------------------------------------
+function showProgressBar(duration = 3000) {
+    const container = document.getElementById('progressContainer');
+    const bar = document.getElementById('progressBar');
+    container.style.display = 'block';
+    bar.style.width = '0%';
 
+    let startTime = null;
+
+    return new Promise(resolve => {
+        function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            bar.style.width = (progress * 100) + '%';
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                container.style.display = 'none';
+                resolve();
+            }
+        }
+        requestAnimationFrame(animate);
+    });
+}
 
 // -------------------------------------
 // REORGANIZE PDF using cloud blank page
@@ -111,6 +169,9 @@ async function reorganizePDF() {
         alert("Please upload the Original PDF.");
         return;
     }
+
+    // Show progress bar for estimated 3 seconds during processing
+    const progressPromise = showProgressBar(3000);
 
     const pdfBytes = await pdfFile.arrayBuffer();
     const blankBytes = await fetch(BLANK_URL).then(res => res.arrayBuffer());
@@ -171,46 +232,25 @@ async function reorganizePDF() {
         }
     }
 
+
+    // Await progress bar before triggering download
+    await progressPromise;
+
+
     // DOWNLOAD OUTPUT PDF
-   // const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
-   // const link = document.createElement("a");
-   // link.href = pdfDataUri;
-   // link.download = "reorganized.pdf";
-   // link.click();
+    const originalName = pdfFile.name.replace(".pdf", "");
+    const outputName = originalName + "_ORGANIZED.pdf";
+
+    const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
+    const link = document.createElement("a");
+    link.href = pdfDataUri;
+    link.download = outputName;
+    link.click();
 
     // SHOW CELEBRATION POPUP
-   // showSuccessPopup();
-
-
-
-
-
-
-    // DOWNLOAD OUTPUT PDF
-const originalName = pdfFile.name.replace(".pdf", "");
-const outputName = originalName + "_ORGANIZED.pdf";
-
-const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
-const link = document.createElement("a");
-link.href = pdfDataUri;
-link.download = outputName;
-link.click();
-
-// SHOW CELEBRATION POPUP
-showSuccessPopup();
-
-
-
-
-
-
-    
+    showSuccessPopup();
 }
-
 </script>
 
 </body>
 </html>
-
-
-
