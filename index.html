@@ -10,11 +10,12 @@
     <!-- CONFETTI -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <!-- Your CSS -->
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* POPUP BOX STYLE */
+        /* ==========================
+           SUCCESS POPUP
+        =========================== */
         #successPopup {
             position: fixed;
             top: 50%;
@@ -35,49 +36,58 @@
             to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
         }
 
-        #successPopup h3 {
-            margin: 0 0 10px;
-            font-size: 22px;
-            color: #28a745;
-        }
-
-        #successPopup p {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        /* PROGRESS BAR CONTAINER */
-        #progressContainer {
+        /* ==========================
+           PROGRESS BAR OVERLAY
+        =========================== */
+        #progressOverlay {
             position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            max-width: 400px;
-            height: 20px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            overflow: hidden;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.55);
             display: none;
-            z-index: 9999;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
         }
 
-        /* PROGRESS BAR */
+        #progressBox {
+            width: 80%;
+            max-width: 350px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        }
+
         #progressBar {
-            height: 100%;
-            width: 0%;
-            background: #5865f2;
+            width: 100%;
+            height: 12px;
+            background: #ddd;
             border-radius: 10px;
-            transition: width 0.2s ease;
+            margin-top: 10px;
+        }
+
+        #progressFill {
+            width: 0%;
+            height: 12px;
+            background: #28a745;
+            border-radius: 10px;
+            transition: 0.2s ease;
+        }
+
+        #progressPercent {
+            font-size: 16px;
+            margin-top: 8px;
         }
     </style>
 
 </head>
 <body>
 
-<h2>PDF Page Reorganizer BY Umesh J  </h2>
-    
+<h2>PDF Page Reorganizer BY Umesh J</h2>
 
 <div class="container">
 
@@ -92,96 +102,75 @@
 
 </div>
 
-<!-- PROGRESS BAR -->
-<div id="progressContainer">
-    <div id="progressBar"></div>
-</div>
-
 <!-- SUCCESS POPUP -->
 <div id="successPopup">
     <h3>🎉 PDF Ready!</h3>
     <p>Your rearranged PDF has been downloaded successfully.</p>
 </div>
 
+<!-- PROGRESS OVERLAY -->
+<div id="progressOverlay">
+    <div id="progressBox">
+        <h3>Organizing PDF...</h3>
+        <div id="progressBar"><div id="progressFill"></div></div>
+        <p id="progressPercent">0%</p>
+    </div>
+</div>
+
+
 <script>
-// -------------------------------------
+
 // CLOUD BLANK PAGE URL
-// -------------------------------------
 const BLANK_URL = "https://raw.githubusercontent.com/umesh7499/Micro-Maker-Tool/main/blank.pdf";
 
-
-// -------------------------------------
-// SHOW POPUP WITH CELEBRATION
-// -------------------------------------
 function showSuccessPopup() {
     const popup = document.getElementById("successPopup");
     popup.style.display = "block";
 
-    // CONFETTI
     confetti({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 }
     });
 
-    // AUTO CLOSE AFTER 3 SECONDS
     setTimeout(() => {
         popup.style.display = "none";
     }, 3000);
 }
 
-// -------------------------------------
-// SHOW PROGRESS BAR
-// -------------------------------------
-function showProgressBar(duration = 3000) {
-    const container = document.getElementById('progressContainer');
-    const bar = document.getElementById('progressBar');
-    container.style.display = 'block';
-    bar.style.width = '0%';
 
-    let startTime = null;
-
-    return new Promise(resolve => {
-        function animate(timestamp) {
-            if (!startTime) startTime = timestamp;
-            const elapsed = timestamp - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            bar.style.width = (progress * 100) + '%';
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                container.style.display = 'none';
-                resolve();
-            }
-        }
-        requestAnimationFrame(animate);
-    });
+// UPDATE PROGRESS BAR
+function updateProgress(percent) {
+    document.getElementById("progressFill").style.width = percent + "%";
+    document.getElementById("progressPercent").innerText = percent + "%";
 }
 
-// -------------------------------------
-// REORGANIZE PDF using cloud blank page
-// -------------------------------------
-async function reorganizePDF() {
-    const pdfFile = document.getElementById('pdfFile').files[0];
 
+// REORGANIZE PDF
+async function reorganizePDF() {
+
+    const pdfFile = document.getElementById('pdfFile').files[0];
     if (!pdfFile) {
         alert("Please upload the Original PDF.");
         return;
     }
 
-    // Show progress bar for estimated 3 seconds during processing
-    const progressPromise = showProgressBar(3000);
+    // SHOW PROGRESS SCREEN
+    document.getElementById("progressOverlay").style.display = "flex";
+    updateProgress(5);
 
     const pdfBytes = await pdfFile.arrayBuffer();
-    const blankBytes = await fetch(BLANK_URL).then(res => res.arrayBuffer());
+    const blankBytes = await fetch(BLANK_URL).then(r => r.arrayBuffer());
+
+    updateProgress(15);
 
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
     const blankDoc = await PDFLib.PDFDocument.load(blankBytes);
     const newPdf = await PDFLib.PDFDocument.create();
 
+    updateProgress(25);
 
-    // PATTERN ROWS
+    // PATTERN
     const patterns = [
         [1,3,5,7,9,11,13,15,17],
         [6,4,2,12,10,8,18,16,14],
@@ -196,34 +185,26 @@ async function reorganizePDF() {
         [60,58,56,66,64,62,72,70,68],
 
         [73,75,77,79,81,83,85,87,89],
-        [78,76,74,84,82,80,90,88,86],
-
-        [91,93,95,97,99,101,103,105,107],
-        [96,94,92,102,100,98,108,106,104],
-
-        [109,111,113,115,117,119,121,123,125],
-        [114,112,110,120,118,116,126,124,122],
-
-        [127,129,131,133,135,137,139,141,143],
-        [132,130,128,138,136,134,144,142,140],
-
-        [145,147,149,151,153,155,157,159,161],
-        [150,148,146,156,154,152,162,160,158]
+        [78,76,74,84,82,80,90,88,86]
     ];
 
     const totalPages = pdfDoc.getPageCount();
-    const neededSets = Math.ceil(totalPages / 18);
-    const rowsToUse = neededSets * 2;
-    const patternsToUse = patterns.slice(0, rowsToUse);
 
+    const pagesToProcess = patterns.flat().length;
+    let processed = 0;
 
-    // BUILD FINAL PDF
-    for (let row of patternsToUse) {
+    // PROCESS PAGES IN ORDER
+    for (let row of patterns) {
         for (let p of row) {
-            let idx = p - 1;
+            processed++;
 
-            if (idx < totalPages) {
-                const [copied] = await newPdf.copyPages(pdfDoc, [idx]);
+            let percent = Math.min(90, Math.floor((processed / pagesToProcess) * 80) + 10);
+            updateProgress(percent);
+
+            let index = p - 1;
+
+            if (index < totalPages) {
+                const [copied] = await newPdf.copyPages(pdfDoc, [index]);
                 newPdf.addPage(copied);
             } else {
                 const [blankPage] = await newPdf.copyPages(blankDoc, [0]);
@@ -232,24 +213,30 @@ async function reorganizePDF() {
         }
     }
 
+    updateProgress(95);
 
-    // Await progress bar before triggering download
-    await progressPromise;
-
-
-    // DOWNLOAD OUTPUT PDF
+    // SAVE PDF
     const originalName = pdfFile.name.replace(".pdf", "");
     const outputName = originalName + "_ORGANIZED.pdf";
 
     const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
+
+    updateProgress(100);
+
+    // DOWNLOAD
     const link = document.createElement("a");
     link.href = pdfDataUri;
     link.download = outputName;
     link.click();
 
-    // SHOW CELEBRATION POPUP
+    // HIDE PROGRESS SCREEN
+    setTimeout(() => {
+        document.getElementById("progressOverlay").style.display = "none";
+    }, 800);
+
     showSuccessPopup();
 }
+
 </script>
 
 </body>
