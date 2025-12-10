@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Page Reorganizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PDF-LIB -->
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+
+    <!-- CONFETTI -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* ==========================
+           SUCCESS POPUP
+        =========================== */
+        #successPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px 35px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            text-align: center;
+            display: none;
+            z-index: 9999;
+            animation: popIn 0.4s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.7) translate(-50%, -50%); opacity: 0; }
+            to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+        }
+
+        /* ==========================
+           PROGRESS BAR OVERLAY
+        =========================== */
+        #progressOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+
+        #progressBox {
+            width: 80%;
+            max-width: 350px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        }
+
+        #progressBar {
+            width: 100%;
+            height: 12px;
+            background: #ddd;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        #progressFill {
+            width: 0%;
+            height: 12px;
+            background: #28a745;
+            border-radius: 10px;
+            transition: 0.2s ease;
+        }
+
+        #progressPercent {
+            font-size: 16px;
+            margin-top: 8px;
+        }
+    </style>
+
+</head>
+<body>
+
+<h2>PDF Page Reorganizer BY Umesh J</h2>
+
+<div class="container">
+
+    <label>Upload Original PDF:</label>
+    <input type="file" id="pdfFile" accept="application/pdf">
+
+    <button onclick="reorganizePDF()">Reorganize PDF</button>
+
+    <button class="next-tool-btn" onclick="location.href='9page.html'">
+        Convert PDF to 9 Pages on 1 Sheet
+    </button>
+
+</div>
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup">
+    <h3>🎉 PDF Ready!</h3>
+    <p>Your rearranged PDF has been downloaded successfully.</p>
+</div>
+
+<!-- PROGRESS OVERLAY -->
+<div id="progressOverlay">
+    <div id="progressBox">
+        <h3>Organizing PDF...</h3>
+        <div id="progressBar"><div id="progressFill"></div></div>
+        <p id="progressPercent">0%</p>
+    </div>
+</div>
+
+
+<script>
+
+// CLOUD BLANK PAGE URL
+const BLANK_URL = "https://raw.githubusercontent.com/umesh7499/Micro-Maker-Tool/main/blank.pdf";
+
+function showSuccessPopup() {
+    const popup = document.getElementById("successPopup");
+    popup.style.display = "block";
+
+    confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+
+    setTimeout(() => {
+        popup.style.display = "none";
+    }, 3000);
+}
+
+
+// UPDATE PROGRESS BAR
+function updateProgress(percent) {
+    document.getElementById("progressFill").style.width = percent + "%";
+    document.getElementById("progressPercent").innerText = percent + "%";
+}
+
+
+// REORGANIZE PDF
+async function reorganizePDF() {
+
+    const pdfFile = document.getElementById('pdfFile').files[0];
+    if (!pdfFile) {
+        alert("Please upload the Original PDF.");
+        return;
+    }
+
+    // SHOW PROGRESS SCREEN
+    document.getElementById("progressOverlay").style.display = "flex";
+    updateProgress(5);
+
+    const pdfBytes = await pdfFile.arrayBuffer();
+    const blankBytes = await fetch(BLANK_URL).then(r => r.arrayBuffer());
+
+    updateProgress(15);
+
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+    const blankDoc = await PDFLib.PDFDocument.load(blankBytes);
+    const newPdf = await PDFLib.PDFDocument.create();
+
+    updateProgress(25);
+
+    // PATTERN
+    const patterns = [
+        [1,3,5,7,9,11,13,15,17],
+        [6,4,2,12,10,8,18,16,14],
+
+        [19,21,23,25,27,29,31,33,35],
+        [24,22,20,30,28,26,36,34,32],
+
+        [37,39,41,43,45,47,49,51,53],
+        [42,40,38,48,46,44,54,52,50],
+
+        [55,57,59,61,63,65,67,69,71],
+        [60,58,56,66,64,62,72,70,68],
+
+        [73,75,77,79,81,83,85,87,89],
+        [78,76,74,84,82,80,90,88,86]
+    ];
+
+    const totalPages = pdfDoc.getPageCount();
+
+    const pagesToProcess = patterns.flat().length;
+    let processed = 0;
+
+    // PROCESS PAGES IN ORDER
+    for (let row of patterns) {
+        for (let p of row) {
+            processed++;
+
+            let percent = Math.min(90, Math.floor((processed / pagesToProcess) * 80) + 10);
+            updateProgress(percent);
+
+            let index = p - 1;
+
+            if (index < totalPages) {
+                const [copied] = await newPdf.copyPages(pdfDoc, [index]);
+                newPdf.addPage(copied);
+            } else {
+                const [blankPage] = await newPdf.copyPages(blankDoc, [0]);
+                newPdf.addPage(blankPage);
+            }
+        }
+    }
+
+    updateProgress(95);
+
+    // SAVE PDF
+    const originalName = pdfFile.name.replace(".pdf", "");
+    const outputName = originalName + "_ORGANIZED.pdf";
+
+    const pdfDataUri = await newPdf.saveAsBase64({ dataUri: true });
+
+    updateProgress(100);
+
+    // DOWNLOAD
+    const link = document.createElement("a");
+    link.href = pdfDataUri;
+    link.download = outputName;
+    link.click();
+
+    // HIDE PROGRESS SCREEN
+    setTimeout(() => {
+        document.getElementById("progressOverlay").style.display = "none";
+    }, 800);
+
+    showSuccessPopup();
+}
+
+</script>
+
+</body>
+</html>
+
