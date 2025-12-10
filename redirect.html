@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centered Image</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f5f5f5;
+        font-family: Arial, sans-serif;
+    }
+
+    .center-img {
+        max-width: 80%;
+        max-height: 80%;
+        object-fit: contain;
+        animation: slowZoom 4s infinite ease-in-out;
+    }
+
+    @keyframes slowZoom {
+        0%   { transform: scale(1); }
+        50%  { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+</style>
+</head>
+
+<body>
+
+    <img src="video.gif" class="center-img">
+
+</body>
+</html>
