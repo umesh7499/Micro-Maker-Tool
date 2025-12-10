@@ -187,3 +187,72 @@ h2 {
 
 
 
+
+
+  /* ==========================
+   SUCCESS POPUP WITH IMAGE + BLUR BACKGROUND
+=========================== */
+
+/* BLUR OVERLAY */
+#popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 9998;
+    display: none;
+}
+
+/* POPUP BOX */
+#downloadPopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 35px 45px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    text-align: center;
+    display: none;
+    z-index: 9999;
+    animation: fadeIn 0.5s ease;
+    width: 90%;
+    max-width: 420px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8) translate(-50%, -50%); }
+    to { opacity: 1; transform: scale(1) translate(-50%, -50%); }
+}
+
+/* IMAGE ANIMATION */
+#popupImg {
+    width: 140px;
+    height: 140px;
+    margin-bottom: 12px;
+    animation: slowZoom 3s infinite ease-in-out;
+}
+
+@keyframes slowZoom {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* CLOSE BUTTON */
+#closePopup {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
